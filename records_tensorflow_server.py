@@ -43,7 +43,7 @@ X = [feat_tr(d) for d in data]
 y = np.array([[1 if d['spam'] else 0, 1 if not d['spam'] else 0] for d in data])
 
 ngram_range=(1, 1)
-count_vect = CountVectorizer(ngram_range=ngram_range, max_features=8000)
+count_vect = CountVectorizer(ngram_range=ngram_range, max_features=15000)
 tfid = TfidfTransformer()
 X_v = count_vect.fit_transform(X)
 X_v = tfid.fit_transform(X_v)
@@ -51,9 +51,9 @@ X_v = tfid.fit_transform(X_v)
 
 # In[4]:
 
-trainX, testX, trainY, testY = train_test_split(X_v, np.asarray(y, dtype=np.float32), test_size=3000, train_size=6000, random_state=42)
+#trainX, testX, trainY, testY = train_test_split(X_v, np.asarray(y, dtype=np.float32), test_size=3000, train_size=6000, random_state=42)
 
-#trainX, testX, trainY, testY = train_test_split(X_v, np.asarray(y, dtype=np.float32), test_size=0.33, random_state=42)
+trainX, testX, trainY, testY = train_test_split(X_v, np.asarray(y, dtype=np.float32), test_size=0.25, random_state=40)
 
 
 # In[5]:
@@ -189,7 +189,7 @@ for i in range(numEpochs):
             print("step %d, training accuracy %g"%(i, train_accuracy))
             print("step %d, cost %g"%(i, newCost))
             print("step %d, change in cost %g"%(i, diff))
-            
+
             y_res = sess.run(activation_OP, feed_dict={Xtens:testX})
             y_res = list(y_res[:,0] > 0.5)
             y_gold = list(bool(yy) for yy in testY[:,0])
@@ -201,26 +201,16 @@ for i in range(numEpochs):
                 c[(False, False)] / (c[(False, False)] + c[(False, True)]),
                 (c[(False, False)] + c[(True, True)]) / (len(acc))
             ))
+            if i % 500 == 0:
+                saver = tf.train.Saver()
+                saver.save(sess, "sessions/model_epoch_{0}.ckpt".format(i))
 
-            # Plot progress to our two subplots
-            #accuracyLine, = ax1.plot(epoch_values, accuracy_values)
-            #costLine, = ax2.plot(epoch_values, cost_values)
-            #fig.canvas.draw()
-            #time.sleep(1)
+print("final test set: %s" %str(sess.run(accuracy_OP,
+                                        feed_dict={Xtens: testX,
+                                                   yGold: testY})))
 
-
-# How well do we perform on held-out test data?
-print("final accuracy on test set: %s" %str(sess.run(accuracy_OP, 
-                                                     feed_dict={Xtens: testX, 
-                                                                yGold: testY})))
-
-
-# In[20]:
-
-# Create Saver
 saver = tf.train.Saver()
-# Save variables to .ckpt file
-saver.save(sess, "trained_variables.ckpt")
+saver.save(sess, "sessions/model_final.ckpt")
 
 # Close tensorflow session
 #sess.close()
