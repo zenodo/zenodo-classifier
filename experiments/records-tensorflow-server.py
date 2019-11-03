@@ -5,27 +5,25 @@
 from __future__ import division
 
 import json
-import sklearn
-import requests
-from sklearn.model_selection import train_test_split
-from collections import Counter
-from sklearn.feature_extraction.text import TfidfTransformer
-from sklearn.pipeline import Pipeline
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.preprocessing import FunctionTransformer
-from sklearn.linear_model import SGDClassifier
-from sklearn.naive_bayes import MultinomialNB
-from sklearn import metrics
-from sklearn.metrics import make_scorer
-from sklearn.model_selection import GridSearchCV
-import tensorflow as tf
-import numpy as np
-import tarfile
 import os
-import json
-import matplotlib.pyplot as plt
+import tarfile
 import time
+from collections import Counter
 
+import matplotlib.pyplot as plt
+import numpy as np
+import requests
+import sklearn
+from sklearn import metrics
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.linear_model import SGDClassifier
+from sklearn.metrics import make_scorer
+from sklearn.model_selection import GridSearchCV, train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import FunctionTransformer
+
+import tensorflow as tf
 
 # In[2]:
 
@@ -214,4 +212,3 @@ saver.save(sess, "sessions/model_final.ckpt")
 
 # Close tensorflow session
 #sess.close()
-
