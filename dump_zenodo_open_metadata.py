@@ -2,6 +2,7 @@ import datetime
 import json
 from collections import Counter, namedtuple
 from itertools import groupby, takewhile
+import gzip
 
 from invenio_db import db
 from invenio_pidstore.models import PersistentIdentifier
@@ -52,8 +53,8 @@ def parse_record(rec, spam=False):
     out["spam"] = spam
     return out
 
-
-FILENAME = "zenodo_open_metadata_{}.txt".format(datetime.datetime.now().isoformat())
+today = datetime.date.today().isoformat()
+FILENAME = f"zenodo_open_metadata_{today}.jsonl.gz"
 
 records_ham = (
     db.session.query(RecordMetadata)
@@ -66,8 +67,11 @@ records_ham = (
 )
 
 # Write the non-spam records first
-with open(FILENAME, "w") as fp:
-    for r in records_ham.yield_per(1000):
+total_ham = records_ham.count()
+with gzip.open(FILENAME, "wb") as fp:
+    for idx, r in enumerate(records_ham.yield_per(1000)):
+        if idx % 10000 == 0:
+            print('[{}]: {} / {}'.format(datetime.datetime.now().isoformat(), idx, total_ham))
         if r.json is not None:
             rec = parse_record(Record(r.json, model=r), spam=False)
             fp.write(json.dumps(rec) + "\n")
@@ -84,15 +88,18 @@ records_spam = (
 
 # Write the SPAM records
 failing_records = []
-with open(FILENAME, "a") as fp:
-    for r in records_spam.yield_per(1000):
-        if (
-            r.json is not None
-            and "removal_reason" in r.json
-            and "spam" in r.json["removal_reason"].lower()
-        ):
-            try:
+total_spam = records_spam.count()
+with gzip.open(FILENAME, "ab") as fp:
+    for idx, r in enumerate(records_spam.yield_per(1000)):
+        if idx % 1000 == 0:
+            print('[{}]: {} / {}'.format(datetime.datetime.now().isoformat(), idx, total_spam))
+        try:
+            if (
+                r.json is not None
+                and "removal_reason" in r.json
+                and "spam" in r.json["removal_reason"].lower()
+            ):
                 rec = parse_record(Record(r.json, model=r).revisions[-2], spam=True)
                 fp.write(json.dumps(rec) + "\n")
-            except:
-                failing_records.append(r)
+        except Exception as ex:
+            failing_records.append((r, ex))
