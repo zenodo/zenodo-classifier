@@ -27,17 +27,15 @@ To compare with older models:
 
 ## Structure
 
-- `datasets/` - Downloaded datasets
-- `models/` - "Pickled" trained models
 - `experiments/` - Experimental model notebooks
 - `legacy/` - Legacy model notebooks
 - `dump_zenodo_open_metadata.py` - Generates a dump from the database, that can be used to train classifier models
 - `download_zenodo_open_metadata_archive.py` - Downloads and extracts older dumps
 - `clean_zenodo_open_metadata.py` - Cleans downloaded datasets
 - `model_spam_detection_record.ipynb` + `model_spam_detection_communities.ipynb` - Currently used classifier model notebooks for producing a trained model
+- `run_model_py.ipynb`
 
 ### TODO
 
-- [ ] Update communities model
 - [ ] Improve metrics
 - [ ] Update README
