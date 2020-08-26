@@ -9,7 +9,7 @@ with gzip.open(filename, 'wb') as fp:
         is_spam = (
             c.deleted_at is not None and
             c.description is not None and
-            c.description.lower().startswith('--SPAM--')
+            c.description.lower().startswith('--spam--')
         )
         fp.write(json.dumps({
             'id': c.id,
