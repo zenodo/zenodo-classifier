@@ -14,7 +14,7 @@ with gzip.open(filename, 'wb') as fp:
         fp.write(json.dumps({
             'id': c.id,
             'title': c.title,
-            'description': c.description,
+            'description': c.description.replace('--SPAM--', ''),
             'curation_policy': c.curation_policy,
             'page': c.page,
             'spam': is_spam,
