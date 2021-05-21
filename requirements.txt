@@ -22,7 +22,7 @@ requests==2.24.0
 scikit-learn==0.23.1
 scipy==1.4.1
 six==1.15.0
-tensorflow==2.4.0
+tensorflow==2.5.0
 traitlets==4.3.3
 urllib3==1.25.9
 wcwidth==0.2.5
