@@ -69,7 +69,7 @@ if not dump_type:
 today = datetime.date.today().isoformat()
 FILENAME = "zenodo_open_metadata_" + dump_type + '_' + today + ".jsonl.gz"
 
-if dump_type in ('spam', 'full'):
+if dump_type in ('ham', 'full'):
     records_ham = (
         db.session.query(RecordMetadata)
         .join(PersistentIdentifier, PersistentIdentifier.object_uuid == RecordMetadata.id)
@@ -90,7 +90,7 @@ if dump_type in ('spam', 'full'):
                 rec = parse_record(Record(r.json, model=r), spam=False)
                 fp.write(json.dumps(rec) + "\n")
 
-if dump_type in ('ham', 'full'):
+if dump_type in ('spam', 'full'):
     records_spam = (
         db.session.query(RecordMetadata)
         .join(PersistentIdentifier, PersistentIdentifier.object_uuid == RecordMetadata.id)
