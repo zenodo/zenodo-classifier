@@ -5,7 +5,7 @@ import datetime
 
 filename = 'zenodo_community_metadata_{}.jsonl.gz'.format(datetime.date.today().isoformat())
 with gzip.open(filename, 'wb') as fp:
-    for c in Community.query:
+    for c in Community.query.yield_per(1000):
         is_spam = (
             c.deleted_at is not None and
             c.description is not None and
