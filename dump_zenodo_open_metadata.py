@@ -60,11 +60,11 @@ DUMP_TYPES = {
 }
 
 choices = [k + ' - ' + v for k, v in DUMP_TYPES.items()]
-choice = str(input("What type of dump you want? {}".format(', '.join(choices)) + '\n'))
+choice = str(raw_input("What type of dump you want? {}".format(', '.join(choices)) + '\n'))
 dump_type = DUMP_TYPES.get(choice)
 
 if not dump_type:
-    raise Exception('Invalid dump type {}'.format(choice))
+    dump_type = 'full'
 
 today = datetime.date.today().isoformat()
 FILENAME = "zenodo_open_metadata_" + dump_type + '_' + today + ".jsonl.gz"
