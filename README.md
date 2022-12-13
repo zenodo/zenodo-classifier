@@ -1,27 +1,50 @@
-# Zenodo spam classifiers
+## Zenodo spam classifiers
 
 Spam classification machine learning models for Zenodo records and communities.
 
 ## Usage
 
-First of all, create a virtualenv, install the depencencies, and run the Jupyter notebook server:
+First of all, create a virtual environment (the make script will install the required dependencies in it):
 
 ```bash
-# Create a virtual environment
-   mkvirtualenv --python python3.9 zenodo-classifier
-   (zenodo-classifier) pip install -e .
-   
-# This will also open Jupyter notebook in your browser
-   (zenodo-classifier) jupyter notebook
+   mkvirtualenv --python python3.10 zenodo-classifier # Create the virtual environment
 ```
 
-To re-train the model:
+To train/re-train the model:
 
-1. Go to Zenodo Open Metadata record at <https://doi.org/10.5281/zenodo.787062> to acces all dataset versions.
-2. Download the latest dump locally under `data`
-3. Open the `model_spam_detection_record.ipynb` notebook
-4. Update the `data_file` and `model_path` variables to point to the new dump location
-5. Run all the cells up to `4. Dump model`.
+```bash
+   make train
+```
+
+The `make train` command will install all the necessary dependencies and run the following python scripts:
+
+- `make_dataset.py`: download/create the Zenodo dataset and store it in `data/raw/zenodo_open_metadata_YYYY-MM-DD.jsonl`.
+- `process_dataset.py`: extract the features/process them and store the new dataset in `data/processed/zenodo_open_metadata_processed_YYYY-MM-DD.csv`.
+- `train_model.py`: train the model and store it in `models/zenodo_msc_YYYY-MM-DD`.
+
+Note: each of these files can be called as a script (using `make` or manually) or imported as module. As a script, they don't take any parameters, the `process_dataset.py` (resp. `train_model.py`) will automatically search for the latest dataset in `data/raw/` (resp. `data/processed/`) and use it. The latest dataset is found by comparing the date present in the file name. If the data is placed manually in `data/raw` (resp. `data/processed`) it should follow the naming convention, that is, `data/raw/zenodo_open_metadata_YYYY-MM-DD.jsonl` (resp. `zenodo_open_metadata_processed_YYYY-MM-DD.csv`) to ensure that it is found automatically.
+
+To make a prediction on a new record you can proceed in two ways:
+
+- Use the `predict_model.py` script:
+  ```bash
+  export PYTHONPATH=/path/to/zenodo-classifier # you can use "PYTHONPATH=$(pwd)" if you are in the zenodo-classifier directory
+  python3 predict.py "Some description of the record that is not preprocess (but can be)"
+  ```
+- Import `predict_model.py` in your python script:
+  ```python
+  from src.models.predict_model import load_model, make_prediction
+  # You need to load the model only once
+  # You must pass the path to the model as argument
+  # You can get the path to the latest model with `find_latest_model()` or pass the path to the model you want to use
+  model = load_model(model_path)
+  # You can make some predictions
+  make_prediction(model, "Some description of the record that is not preprocess (but can be)")
+  ```
+  
+To visualize the results of the model:
+
+> TODO
 
 To compare with older models:
 
@@ -64,7 +87,7 @@ To compare with older models:
 │   │   └── make_dataset.py
 │   │
 │   ├── features       <- Scripts to turn raw data into features for modeling
-│   │   └── build_features.py
+│   │   └── process_dataset.py
 │   │
 │   ├── models         <- Scripts to train models and then use trained models to make
 │   │   │                 predictions
@@ -75,5 +98,3 @@ To compare with older models:
 │       └── visualize.py
 
 ```
-
-

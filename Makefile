@@ -21,13 +21,21 @@ endif
 #################################################################################
 
 ## Install Python Dependencies
-requirements: test_environment
+requirements: #test_environment #TODO: uncomment test_environment when it is ready
 	$(PYTHON_INTERPRETER) -m pip install -U pip setuptools wheel
 	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
 
 ## Make Dataset
 data: requirements
-	$(PYTHON_INTERPRETER) src/data/make_dataset.py data/raw data/processed
+	export PYTHONPATH=$(PROJECT_DIR) && $(PYTHON_INTERPRETER) src/data/make_dataset.py data/raw data/processed
+
+## Process Dataset
+process: data
+	export PYTHONPATH=$(PROJECT_DIR) && $(PYTHON_INTERPRETER) src/features/process_dataset.py
+
+## Train model
+train: process
+	export PYTHONPATH=$(PROJECT_DIR) && $(PYTHON_INTERPRETER) src/models/train_model.py
 
 ## Delete all compiled Python files
 clean:
