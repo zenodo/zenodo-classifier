@@ -37,6 +37,10 @@ process: data
 train: process
 	export PYTHONPATH=$(PROJECT_DIR) && $(PYTHON_INTERPRETER) src/models/train_model.py
 
+## Visualize model
+visualize: train
+	export PYTHONPATH=$(PROJECT_DIR) && $(PYTHON_INTERPRETER) src/visualization/visualize.py $(N)
+
 ## Delete all compiled Python files
 clean:
 	find . -type f -name "*.py[co]" -delete

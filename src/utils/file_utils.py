@@ -31,6 +31,8 @@ MODELS_EXTENSION = ""
 
 MODEL_CHECKPOINTS_PATH = MODELS_PATH / "checkpoints"
 
+REPORTS_PATH = ROOT_PATH / "reports"
+
 
 def extract_date(filename: str) -> str | None:
     """Extract the date from the filename.

@@ -46,7 +46,11 @@ To make a prediction on a new record you can proceed in two ways:
   
 To visualize the results of the model:
 
-> TODO
+```bash
+make visualize
+```
+
+This will generate a `report_YYYY-MM-DD.md` file in the `reports/`. To make the generate faster you can use `make visualize N=1000` to compute the results on only 1000 tests samples.
 
 To compare with older models:
 
