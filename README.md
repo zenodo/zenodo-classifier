@@ -24,6 +24,8 @@ The `make train` command will install all the necessary dependencies and run the
 
 Note: each of these files can be called as a script (using `make` or manually) or imported as module. As a script, they don't take any parameters, the `process_dataset.py` (resp. `train_model.py`) will automatically search for the latest dataset in `data/raw/` (resp. `data/processed/`) and use it. The latest dataset is found by comparing the date present in the file name. If the data is placed manually in `data/raw` (resp. `data/processed`) it should follow the naming convention, that is, `data/raw/zenodo_open_metadata_YYYY-MM-DD.jsonl` (resp. `zenodo_open_metadata_processed_YYYY-MM-DD.csv`) to ensure that it is found automatically.
 
+Note: checkpoints are automatically saved in `models/checkpoints/` during training. If there are some checkpoints, the training will automatically resume from there. If you want to start over for some reason, delete them.
+
 To make a prediction on a new record you can proceed in two ways:
 
 - Use the `predict_model.py` script:

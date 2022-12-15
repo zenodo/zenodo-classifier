@@ -34,6 +34,7 @@ def make_prediction(description: str, model: Pipeline) -> bool:
 
     Args:
         description (str): Description to predict.
+        model (Pipeline): Model to use for prediction.
 
     Returns:
         bool: Prediction. True if the description is spam, False otherwise.
@@ -42,7 +43,7 @@ def make_prediction(description: str, model: Pipeline) -> bool:
     prediction = model(description, padding=True, truncation=True)
     is_spam = prediction[0]["label"] == "LABEL_1"
     score = prediction[0]["score"]
-    logging.info(f'Prediction for "{description}": {is_spam=}, {score=}')
+    logging.debug(f'Prediction for "{description}": {is_spam=}, {score=}')
     return is_spam
 
 

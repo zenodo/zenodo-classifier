@@ -6,6 +6,8 @@
 """Module/script used to train a new model on the processed dataset."""
 
 import logging
+from pathlib import Path
+import shutil
 
 import datasets
 import evaluate
@@ -82,14 +84,13 @@ def compute_metrics(eval_pred):
     metric = evaluate.combine(["accuracy", "f1"])
     logits, labels = eval_pred
     predictions = np.argmax(logits, axis=-1)
-    return metric.compute(predictions=predictions, references=labels, seed=SEED)
+    results = metric.compute(predictions=predictions, references=labels, seed=SEED)
+    logging.info(f"Metrics: {results}")
+    return results
 
 
 def train_model(
-    processed_dataset_path: str,
-    model_path: str,
-    model_checkpoints_path: str,
-    resune_from_checkpoint: bool = False,
+    processed_dataset_path: Path, model_path: Path, model_checkpoints_path: Path
 ) -> None:
     """Trains the model and save it.
 
@@ -115,11 +116,11 @@ def train_model(
         seed=SEED,
         log_level="info",
         logging_strategy="steps",
-        logging_steps=500,
+        logging_steps=2500,
         evaluation_strategy="steps",
-        eval_steps=500,
+        eval_steps=2500,
         save_strategy="steps",
-        save_steps=500,
+        save_steps=2500,
     )
 
     trainer = Trainer(
@@ -130,9 +131,31 @@ def train_model(
         compute_metrics=compute_metrics,
     )
 
-    trainer.train(resume_from_checkpoint=resune_from_checkpoint)
+    if (
+        model_checkpoints_path.exists()
+        and len(list(model_checkpoints_path.iterdir())) > 0
+    ):
+        logging.info(
+            f"Files found in {model_checkpoints_path}, trying to resume training."
+        )
+        resume_from_checkpoint = True
+    else:
+        logging.info(
+            f"No files found in {model_checkpoints_path}, starting training from scratch."
+        )
+        resume_from_checkpoint = False
+
+    trainer.train(resume_from_checkpoint=resume_from_checkpoint)
+    logging.info("Training finished.")
+
     trainer.evaluate()
+
     trainer.save_model(model_path)
+    logging.info(f"Model saved in {model_path}.")
+
+    logging.info(f"Deleting checkpoints in {model_checkpoints_path}.")
+    shutil.rmtree(model_checkpoints_path)
+    logging.info(f"Deleted {model_checkpoints_path}.")
 
 
 if __name__ == "__main__":
@@ -141,6 +164,8 @@ if __name__ == "__main__":
     transformers_logging.disable_default_handler()
     transformers_logging.disable_progress_bar()
     transformers_logging.add_handler(logging.getLogger())
+    evaluate.logging.set_verbosity_info()
+    evaluate.logging.get_logger().addHandler(logging.getLogger())
 
     init_seed()
     check_gpu()
