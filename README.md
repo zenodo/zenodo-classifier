@@ -26,6 +26,8 @@ Note: each of these files can be called as a script (using `make` or manually) o
 
 Note: checkpoints are automatically saved in `models/checkpoints/` during training. If there are some checkpoints, the training will automatically resume from there. If you want to start over for some reason, delete them.
 
+**Note: the `make_dataset.py` script is not ready yet. In the future, it will effectively dump the Zenodo dataset in `data/raw/zenodo_open_metadata_YYYY-MM-DD.jsonl` but will remain unvailable for generic users. You should download the dataset from [this Zenodo record](https://zenodo.org/record/7438358/files/zenodo_open_metadata_2022-12-14.jsonl.gz?download=1). The results given in our report used the Zenodo dataset from 2020/10/21.**
+
 To make a prediction on a new record you can proceed in two ways:
 
 - Use the `predict_model.py` script:
@@ -44,7 +46,7 @@ To make a prediction on a new record you can proceed in two ways:
   make_prediction(model, "Some description of the record that is not preprocess (but can be)")
   ```
   
-To visualize the results of the model:
+To visualize the results of the model, i.e., see its performance on the test set, you can use the `visualize_results.py` script:
 
 ```bash
 make visualize

@@ -81,7 +81,7 @@ def process_dataset(raw_dataset_path: str, processed_dataset_path: str) -> None:
     hams = hams.sample(n=2 * len(spams), random_state=SEED)
 
     df = pd.concat([spams, hams]).rename(columns={"spam": "label"})
-    df.to_csv(processed_dataset_path, index=False)
+    df.to_pickle(processed_dataset_path)
     logging.info(f'Dataset processed and saved to "{processed_dataset_path}".')
 
 

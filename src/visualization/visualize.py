@@ -83,7 +83,7 @@ def generate_report(model_path: Path, N=None):
         sys.exit(1)
 
     expected_df = split_train_test(load_processed_dataset(processed_dataset_path))
-    expected_df = expected_df[1].dropna()
+    expected_df = expected_df[1]
     expected_df = expected_df[:N]
     expected_df["label"] = expected_df["label"].astype(bool)
     expected_df.reset_index(drop=True, inplace=True)
